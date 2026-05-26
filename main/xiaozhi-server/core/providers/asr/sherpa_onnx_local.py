@@ -1,17 +1,15 @@
-import time
-import wave
+import io
 import os
 import sys
-import io
-from config.logger import setup_logging
-from typing import Optional, Tuple, List
-from core.providers.asr.dto.dto import InterfaceType
-from core.providers.asr.base import ASRProviderBase
+import time
+import wave
+from typing import List, Optional, Tuple
 
 import numpy as np
 import sherpa_onnx
-
-from modelscope.hub.file_download import model_file_download
+from config.logger import setup_logging
+from core.providers.asr.base import ASRProviderBase
+from core.providers.asr.dto.dto import InterfaceType
 
 TAG = __name__
 logger = setup_logging()
@@ -38,7 +36,6 @@ class ASRProvider(ASRProviderBase):
     def __init__(self, config: dict, delete_audio_file: bool):
         super().__init__()
         self.interface_type = InterfaceType.LOCAL
-        self.model_dir = config.get("model_dir")
         self.output_dir = config.get("output_dir")
         self.model_type = config.get("model_type", "sense_voice")  # 支持 paraformer
         self.delete_audio_file = delete_audio_file
@@ -46,38 +43,23 @@ class ASRProvider(ASRProviderBase):
         # 确保输出目录存在
         os.makedirs(self.output_dir, exist_ok=True)
 
-        # 初始化模型文件路径
-        model_files = {
-            "model.int8.onnx": os.path.join(self.model_dir, "model.int8.onnx"),
-            "tokens.txt": os.path.join(self.model_dir, "tokens.txt"),
-        }
-
-        # 下载并检查模型文件
-        try:
-            for file_name, file_path in model_files.items():
-                if not os.path.isfile(file_path):
-                    logger.bind(tag=TAG).info(f"正在下载模型文件: {file_name}")
-                    model_file_download(
-                        model_id="pengzhendong/sherpa-onnx-sense-voice-zh-en-ja-ko-yue",
-                        file_path=file_name,
-                        local_dir=self.model_dir,
-                    )
-
-                    if not os.path.isfile(file_path):
-                        raise FileNotFoundError(f"模型文件下载失败: {file_path}")
-
-            self.model_path = model_files["model.int8.onnx"]
-            self.tokens_path = model_files["tokens.txt"]
-
-        except Exception as e:
-            logger.bind(tag=TAG).error(f"模型文件处理失败: {str(e)}")
-            raise
-
         with CaptureOutput():
             if self.model_type == "paraformer":
                 self.model = sherpa_onnx.OfflineRecognizer.from_paraformer(
-                    paraformer=self.model_path,
-                    tokens=self.tokens_path,
+                    paraformer=config.get("model_path"),
+                    tokens=config.get("tokens_path"),
+                    num_threads=2,
+                    sample_rate=16000,
+                    feature_dim=80,
+                    decoding_method="greedy_search",
+                    debug=False,
+                )
+            elif self.model_type == "transducer":
+                self.model = sherpa_onnx.OfflineRecognizer.from_transducer(
+                    encoder=config.get("encoder_path"),
+                    decoder=config.get("decoder_path"),
+                    joiner=config.get("joiner_path"),
+                    tokens=config.get("tokens_path"),
                     num_threads=2,
                     sample_rate=16000,
                     feature_dim=80,
@@ -86,8 +68,8 @@ class ASRProvider(ASRProviderBase):
                 )
             else:  # sense_voice
                 self.model = sherpa_onnx.OfflineRecognizer.from_sense_voice(
-                    model=self.model_path,
-                    tokens=self.tokens_path,
+                    model=config.get("model_path"),
+                    tokens=config.get("tokens_path"),
                     num_threads=2,
                     sample_rate=16000,
                     feature_dim=80,
@@ -124,7 +106,11 @@ class ASRProvider(ASRProviderBase):
         return True
 
     async def speech_to_text(
-        self, opus_data: List[bytes], session_id: str, audio_format="opus", artifacts=None
+        self,
+        opus_data: List[bytes],
+        session_id: str,
+        audio_format="opus",
+        artifacts=None,
     ) -> Tuple[Optional[str], Optional[str]]:
         """语音转文本主处理逻辑"""
         file_path = None
