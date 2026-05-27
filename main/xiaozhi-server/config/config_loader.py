@@ -2,6 +2,7 @@ import os
 import asyncio
 import yaml
 from collections.abc import Mapping
+from config.env_loader import EnvVarLoader
 from config.manage_api_client import (
     init_service,
     get_server_config,
@@ -19,7 +20,7 @@ def get_project_dir():
 
 def read_config(config_path):
     with open(config_path, "r", encoding="utf-8") as file:
-        config = yaml.safe_load(file)
+        config = yaml.load(file, Loader=EnvVarLoader)
     return config
 
 
