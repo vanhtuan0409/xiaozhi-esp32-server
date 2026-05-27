@@ -232,8 +232,8 @@ end_prompt:
 selected_module:
   # 语音活动检测模块，默认使用SileroVAD模型
   VAD: SileroVAD
-  # 语音识别模块，默认使用SherpaASR本地模型
-  ASR: SherpaTransducerASR
+  # 语音识别模块，默认使用FunASR本地模型
+  ASR: FunASR
   # 将根据配置名称对应的type调用实际的LLM适配器
   LLM: ChatGLMLLM
   # 视觉语言大模型
@@ -339,15 +339,6 @@ ASR:
     tokens_path: models/sherpa-onnx-paraformer-zh-small-2024-03-09/tokens.txt
     output_dir: tmp/
     model_type: paraformer
-  SherpaTransducerASR:
-    # Transducer模型（如gipformer），需手动下载encoder/decoder/joiner模型文件
-    type: sherpa_onnx_local
-    encoder_path: models/gipformer/encoder-epoch-35-avg-6.int8.onnx
-    decoder_path: models/gipformer/decoder-epoch-35-avg-6.int8.onnx
-    joiner_path: models/gipformer/joiner-epoch-35-avg-6.int8.onnx
-    tokens_path: models/gipformer/tokens.txt
-    output_dir: tmp/
-    model_type: transducer
   DoubaoASR:
     # 可以在这里申请相关Key等信息
     # https://console.volcengine.com/speech/app
@@ -718,9 +709,9 @@ TTS:
   EdgeTTS:
     # 定义TTS API类型
     type: edge
-    voice: vi-VN-HoaiMyNeural
+    voice: zh-CN-XiaoxiaoNeural
     output_dir: tmp/
-    language: "Vietnamese"
+    # language: "中文"  # 指定输出语种,如:中文、英语、日语、韩语等,请根据所选音色支持的语言进行设置,不填则默认为中文
   DoubaoTTS:
     # 定义TTS API类型
     type: doubao
