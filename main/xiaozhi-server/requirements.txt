@@ -40,3 +40,10 @@ portalocker==3.2.0
 Jinja2==3.1.6
 vosk==0.3.45
 elevenlabs==2.50.0
+#--------- VieNeu TTS minimal deps
+llama-cpp-python==0.3.16
+onnxruntime>=1.20.0
+huggingface_hub
+sea-g2p>=0.7.5
+tqdm
+soundfile
