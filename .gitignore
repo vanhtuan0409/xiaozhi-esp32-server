@@ -158,11 +158,7 @@ main/manager-web/node_modules
 .env.development
 
 # model files
-main/xiaozhi-server/models/SenseVoiceSmall/model.pt
-main/xiaozhi-server/models/sherpa-onnx*
-main/xiaozhi-server/models/hf/
-main/xiaozhi-server/models/piper/
-/main/xiaozhi-server/audio_ref/
+main/xiaozhi-server/models
 /audio_ref/
 /asr-models/iic/SenseVoiceSmall/
 /main/xiaozhi-server/asr-models/iic/SenseVoiceSmall/
