@@ -21,7 +21,10 @@ class ServerMCPManager:
     def __init__(self, conn) -> None:
         """初始化MCP管理器"""
         self.conn = conn
-        self.config_path = get_project_dir() + "data/.mcp_server_settings.json"
+        self.config_path = (
+            os.environ.get("XIAOZHI_MCP_CONFIG_FILE")
+            or get_project_dir() + "data/.mcp_server_settings.json"
+        )
         if not os.path.exists(self.config_path):
             self.config_path = ""
             logger.bind(tag=TAG).warning(
