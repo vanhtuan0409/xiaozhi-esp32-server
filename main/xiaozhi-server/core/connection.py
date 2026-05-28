@@ -531,8 +531,9 @@ class ConnectionHandler:
 
     def _init_prompt_enhancement(self):
 
-        # 更新上下文信息
-        self.prompt_manager.update_context_info(self, self.client_ip)
+        # 更新上下文信息（外部API：IP地理定位、天气等）
+        if not self.config.get("disable_context_info", False):
+            self.prompt_manager.update_context_info(self, self.client_ip)
         enhanced_prompt = self.prompt_manager.build_enhanced_prompt(
             self.config["prompt"],
             self.device_id,

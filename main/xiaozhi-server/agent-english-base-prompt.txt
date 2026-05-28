@@ -49,9 +49,6 @@ For input in the format `{"speaker":"...", "content":"..."}` (speaker = speaker 
 Important: the following information is provided in real time — no need to call tools to query it, just use it directly.
 - Current time: {{current_time}}
 - Today's date: {{today_date}} ({{today_weekday}})
-- Lunar date: {{lunar_date}}
-- Device location: {{local_address}}
-- Local forecast: {{weather_info}}
 {{ dynamic_context }}
 </context>
 
