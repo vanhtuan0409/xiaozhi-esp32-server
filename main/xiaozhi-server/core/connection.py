@@ -524,7 +524,7 @@ class ConnectionHandler:
             """更新系统提示词"""
             self._init_prompt_enhancement()
             """注入工具调用few-shot示例（仅function_call模式）"""
-            self._inject_tool_call_fewshot()
+            # self._inject_tool_call_fewshot()
 
         except Exception as e:
             self.logger.bind(tag=TAG).error(f"实例化组件失败: {e}")
