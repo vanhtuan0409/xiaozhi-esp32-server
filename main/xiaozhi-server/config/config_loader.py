@@ -34,7 +34,10 @@ def load_config():
         return cached_config
 
     default_config_path = get_project_dir() + "config.yaml"
-    custom_config_path = get_project_dir() + "data/.config.yaml"
+    custom_config_path = (
+        os.environ.get("XIAOZHI_CONFIG_FILE")
+        or get_project_dir() + "data/.config.yaml"
+    )
 
     # 加载默认配置
     default_config = read_config(default_config_path)
