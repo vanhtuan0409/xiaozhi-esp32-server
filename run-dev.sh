@@ -11,6 +11,8 @@ docker run --rm -it \
   --security-opt seccomp=unconfined \
   -e TZ=Asia/Ho_Chi_Minh \
   -e LLAMA_CPP_TOKEN=${LLAMA_CPP_TOKEN} \
+  -e FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY} \
+  -e TAVILY_API_KEY=${TAVILY_API_KEY} \
   -e HF_HOME=/opt/xiaozhi-esp32-server/models/hf \
   -p 8000:8000 \
   -p 8003:8003 \

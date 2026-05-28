@@ -38,7 +38,8 @@ class ServerMCPManager:
 
         try:
             with open(self.config_path, "r", encoding="utf-8") as f:
-                config = json.load(f)
+                raw = os.path.expandvars(f.read())
+                config = json.loads(raw)
             return config.get("mcpServers", {})
         except Exception as e:
             logger.bind(tag=TAG).error(
