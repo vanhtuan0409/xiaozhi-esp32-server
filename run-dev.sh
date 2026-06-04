@@ -6,13 +6,17 @@ SERVER_DIR="${SCRIPT_DIR}/main/xiaozhi-server"
 IMAGE="xiaozhi-base"
 CONTAINER_NAME="xiaozhi-dev"
 
+# Run `vault login -method=oidc` if needed to relogin
+FIRECRAWL_API_KEY="$(vault kv get -mount=kv -field=FIRECRAWL_API_KEY homelab/ollama/hermes)"
+TAVILY_API_KEY="$(vault kv get -mount=kv -field=TAVILY_API_KEY homelab/ollama/hermes)"
+
 docker run --rm -it \
   --name "${CONTAINER_NAME}" \
   --security-opt seccomp=unconfined \
   -e TZ=Asia/Ho_Chi_Minh \
   -e LLAMA_CPP_TOKEN=${LLAMA_CPP_TOKEN} \
-  -e FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY} \
-  -e TAVILY_API_KEY=${TAVILY_API_KEY} \
+  -e FIRECRAWL_API_KEY="${FIRECRAWL_API_KEY}" \
+  -e TAVILY_API_KEY="${TAVILY_API_KEY}" \
   -e HF_HOME=/opt/xiaozhi-esp32-server/models/hf \
   -p 8000:8000 \
   -p 8003:8003 \
