@@ -17,7 +17,9 @@ class TTSProvider(TTSProviderBase):
         self.audio_file_type = "wav"
 
         self._voice = None
+        self._normalizer = None
         self._init_piper()
+        self._init_normalizer(config)
 
     def _init_piper(self):
         from piper import PiperVoice
@@ -32,12 +34,31 @@ class TTSProvider(TTSProviderBase):
             f"sample_rate={self._voice.config.sample_rate}"
         )
 
+    def _init_normalizer(self, config):
+        if not config.get("use_normalizer", False):
+            return
+        try:
+            from vietnormalizer import VietnameseNormalizer
+
+            self._normalizer = VietnameseNormalizer()
+            logger.bind(tag=TAG).info("Vietnamese text normalizer enabled")
+        except ImportError:
+            logger.bind(tag=TAG).warning(
+                "vietnormalizer package not installed, normalizer disabled"
+            )
+
+    def _normalize_text(self, text):
+        if self._normalizer is None:
+            return text
+        return self._normalizer.normalize(text)
+
     def _synthesize_to_wav(self, text, target):
         with wave.open(target, "wb") as wav_file:
             self._voice.synthesize_wav(text, wav_file)
 
     async def text_to_speak(self, text, output_file):
         try:
+            text = self._normalize_text(text)
             if output_file:
                 self._synthesize_to_wav(text, output_file)
             else:
