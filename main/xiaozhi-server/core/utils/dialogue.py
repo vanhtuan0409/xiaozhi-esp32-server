@@ -162,7 +162,7 @@ class Dialogue:
             except:
                 pass
 
-            dialogue.append({"role": "system", "content": dynamic_part})
+            dialogue.append({"role": "user", "content": dynamic_part})
 
         # 第四段：实际对话历史（不含 few-shot）
         actual_messages = [m for m in non_system_messages if not m.is_temporary]
